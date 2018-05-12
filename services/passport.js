@@ -19,18 +19,20 @@ passport.use(new GoogleStrategy({
 	clientID: keys.googleClientID,
 	clientSecret: keys.googleClientSecret,
 	callbackURL: '/auth/google/callback',
-}, function(accessToken, refreshToken, profile, done){
-	User.findOne({googleId: profile.id})
-		.then((existingUser) => {
-			if(existingUser){
-				console.log('User exists!!');
-				done(null, existingUser);
-			}else{
-				new User({ googleId: profile.id})
-				.save()
-				.done(null, user);				
-			}
-		});
-	}
+}, async (accessToken, refreshToken, profile, done) => {
+	const existingUser = User.findOne({googleId: profile.id});
+		if(existingUser){
+			console.log('User exists!!');
+			return done(null, existingUser);
+		}
+	const user = new User({ googleId: profile.id}).save();
+			return done(null, user);
+		}
 	)
 );
+
+// function getAlbums(){
+// 	fetch('someapiurl')
+// 	.then(res => res.json())
+// 	.then(json => console.log(json))
+// }
